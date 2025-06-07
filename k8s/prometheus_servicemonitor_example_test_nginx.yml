@@ -1,0 +1,15 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: example-test-nginx-monitor
+  namespace: example-test
+  labels:
+    app: example-test
+spec:
+  endpoints:
+  - interval: 30s
+    port: metrics-nginx #matching deployment ports name
+  selector:
+    matchLabels:
+      app: example-test

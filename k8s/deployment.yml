@@ -1,0 +1,44 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: example-test
+  namespace: example-test
+spec:
+  selector:
+    matchLabels:
+      app: example-test
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: example-test
+    spec:
+      containers:
+      - name: nginx
+        image: example-test-k8s-nginx:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 80
+      #nginx-exporter is necessary for monitoring nginx container on k8s
+      - name: nginx-exporter
+        image: 'nginx/nginx-prometheus-exporter:1.3.0'
+        args:
+          - '-nginx.scrape-uri=http://example-test.com:9113/nginx_status'
+        ports:
+          - containerPort: 9113
+            name: metrics-nginx #matching ServiceMonitor's endpoint ports name
+      - name: php-fpm
+        image: example-test-k8s-php-fpm:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 9000
+      #php-fpm-exporter is necessary for monitoring php-fpm container on k8s
+      - name: php-fpm-exporter
+        image: hipages/php-fpm_exporter
+        ports:
+          - containerPort: 9253
+            name: metrics-php-fpm #matching ServiceMonitor's endpoint ports name
+        env:
+          - name: PHP_FPM_SCRAPE_URI
+            value: "tcp://local:9000/status"
