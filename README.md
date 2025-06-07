@@ -1,5 +1,8 @@
 # k8s_nginx_php-fpm_grafana_prometheus_metallb
 
+# Order to deploy
+deploy_example-test.sh > deploy_grafana_prometheus.sh > deploy_metallb.sh
+
 # About metallb
 https://metallb.io/
 
